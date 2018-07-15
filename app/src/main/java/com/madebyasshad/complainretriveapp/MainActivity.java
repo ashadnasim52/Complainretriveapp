@@ -1,5 +1,6 @@
 package com.madebyasshad.complainretriveapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -28,13 +30,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     ListView compalinoflist;
-
+    Intent i;
+    String value;
 
     ArrayList<String> arrayList=new ArrayList<>();
+    ArrayList<String> arrayofname=new ArrayList<>();
+    ArrayList<String> arrayofcomplain=new ArrayList<>();
+    ArrayList<getdata> jsoncollectdata=new ArrayList<>();
+    HashMap<String,String> map =new HashMap<>();
 
     FirebaseDatabase db=FirebaseDatabase.getInstance();
     DatabaseReference dbref=db.getReference();
@@ -57,6 +65,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         arrayAdapter=new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_list_item_1,arrayList);
 
         compalinoflist.setAdapter(arrayAdapter);
+        compalinoflist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Toast.makeText(getApplicationContext(),"you clicked on"+id,Toast.LENGTH_SHORT).show();
+                i=new Intent(getApplicationContext(),complaincontent.class);
+                i.putExtra("name",value);
+
+                startActivity(i);
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -77,6 +96,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         getdata();
+        Log.i("datadddd","isof hashmap"+map);
+        Log.i("datadddd","isof arraylisst"+arrayList);
+//        itemcalss currentItem = mylistofitem.get(position);
+
+//        getdata gt=jsoncollectdata.get(1);
+//        Log.i("datadddd","isof json collection"+gt);
 
     }
 
@@ -151,12 +176,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
               Log.i("data","apnshot is"+dataSnapshot);
                if (dataSnapshot.getValue().toString()!=null)
                {
-                   String value=dataSnapshot.getValue().toString();
+                   value=dataSnapshot.getValue().toString();
                    try {
                        JSONObject jsonObject=new JSONObject(value);
-                       Log.i("jsonobject","adad"+jsonObject);
-                       String Complain=jsonObject.getString("Complain");
-                       arrayList.add(Complain);
+                       Log.i("jsonobjewect","adad"+jsonObject);
+//                       mylistofitem.add(new itemcalss(q,a));
+
+//                       jsoncollectdata.add(new getdata(jsonObject));
+                       String Complainname=jsonObject.getString("Name");
+                       String Complaintitle=jsonObject.getString("title");
+                       String Complaincontent=jsonObject.getString("Complain");
+//                       map.put("complain",Complain);
+                       arrayList.add(Complaintitle);
+                       arrayofcomplain.add(Complaincontent);
+                       arrayofname.add(Complainname);
                        arrayAdapter.notifyDataSetChanged();
 
                    } catch (JSONException e) {
